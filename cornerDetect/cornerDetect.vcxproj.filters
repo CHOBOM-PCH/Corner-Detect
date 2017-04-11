@@ -18,12 +18,18 @@
     <ClInclude Include="cornerDetect.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="RANSAC_LineFittingAlgorithm.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cornerDetect.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="RANSAC_LineFittingAlgorithm.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

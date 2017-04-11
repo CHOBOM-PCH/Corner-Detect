@@ -41,9 +41,11 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>D:\opencv\build\x86\vc10\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -61,10 +63,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="cornerDetect.h" />
+    <ClInclude Include="RANSAC_LineFittingAlgorithm.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cornerDetect.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="RANSAC_LineFittingAlgorithm.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

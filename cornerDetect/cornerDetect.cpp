@@ -20,51 +20,35 @@ int cornerDetect(const char* route, int* distance, int* pointX, int* pointY)
 	GaussianBlur(gray_img, blur_img, cv::Size(5,5), 30);
 	//adaptiveThreshold(blur_img, threshOutput_img, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 15, 2);
 	threshold(blur_img, threshOutput_img, 100, 255, THRESH_OTSU);
-	Canny(threshOutput_img, edge_img, 100, 200);
+	Canny(threshOutput_img, edge_img, 250, 300);
 	//imshow("input", input_img);
 	//imshow("gray", gray_img);
-	imshow("img", threshOutput_img);
+	//imshow("img", threshOutput_img);
+	imshow("img", edge_img);
 	
-
-	//cornerMinEigenVal(edge_img, corner_img, 2, 5);
-
-	//Mat contour_img = threshOutput_img.clone();
-
-	//vector<vector<Point> > contours;
-	//findContours( contour_img, //외곽선 검출한후 저장
-	//	contours, //외곽선 저장
-	//	RETR_LIST, //모든 윤곽선 검색
-	//	CHAIN_APPROX_SIMPLE);//양끝만 남김 제일위 제일아래 우측 좌측
-	//const int cmin= 300;  // 최소 외곽선 길이
-	//const int cmax= 500; // 최대 외곽선 길이
-	//vector<vector<Point>>::const_iterator itc= contours.begin();
-	//while (itc!=contours.end()) {//itc가 constours의 끝값이 아닌경우
-	//	if (itc->size() < cmin || itc->size() > cmax)//itc의 크기(외곽선 크기)가 일정크기 제외삭제
-	//		itc= contours.erase(itc);
-	//	else 
-	//		++itc;
+	//vector<Vec4i>lines;
+	//HoughLinesP(edge_img, lines, 1, (PI / 180), 50, 50, 5);
+	//
+	//Vec4d params;//, avgparams;
+	//
+	//int x1, y1, x2, y2;
+	//double angle = 0;
+	//for (int k = 0; k < lines.size(); k++){
+	//	params = lines[k];
+	//	x1 = params[0];
+	//	y1 = params[1];
+	//	x2 = params[2];
+	//	y2 = params[3];
+	//	angle = abs(atan2f(((float)(y1 - y2)), abs((float)(x2 - x1))) * 180 / PI);
+	//	Point pt1(x1, y1),pt2(x2, y2);
+	//	line(output_img, pt1, pt2, Scalar(255, 0, 255), 1);
+	//	printf("시작점 %d, %d  끝점 %d %d  각도 %lf \n", x1, y1, x2, y2, angle);
 	//}
-	//drawContours(output_img,contours,-1,Scalar(0,255,0),2);
-	////Rect bndRect = boundingRect(contours[0]);
 
-	
-	
-	//float  eval;
-	//for (int y = 0; y < corner_img.rows; y++)
-	//for (int x = 0; x < corner_img.cols; x++)
-	//{
-	//	eval = corner_img.at<float>(y, x);
 
-	//	if (eval > 0.2) // corner points
-	//	{
-	//		circle(output_img, Point(x, y), 5, Scalar(0, 0, 255), 2);
-	//		//cout << "eval(" << x << ", " << y << ")= "
-	//		//	<< eval << endl;
-	//	}
-	//}
-	int maxCorners = 5;
+	int maxCorners = 20;
 	double qualityLevel = 0.001;
-	double minDistance = 100;
+	double minDistance = 10;
 	int    blockSize = 5;
 	bool   useHarrisDetector = true;//false; // false
 	double k = 0.04;
@@ -75,11 +59,76 @@ int cornerDetect(const char* route, int* distance, int* pointX, int* pointY)
 	cout << "cornerPoints.size() = " << cornerPoints.size() << endl;
 	
 	vector<Point>::const_iterator it;
-	for (it = cornerPoints.begin(); it != cornerPoints.end(); ++it)
-	{
+	for (it = cornerPoints.begin(); it != cornerPoints.end(); ++it)	{
 		circle(output_img, *it, 5, Scalar(0, 0, 255), 2);
 		cout << "cornerPoints(" << (*it).x << ", " << (*it).y << ") " << endl;
 	}
+	
+	
+	//for (it = cornerPoints.begin(); it != cornerPoints.end(); ++it) {
+	int z = 0;
+	int d = 0;
+	vector<Vec2i>detectPoint;
+	
+	//double dx, dy;
+	//sPoint *aDirection = new sPoint[10];
+	//sPoint *bDirection = new sPoint[10];
+	int dx, dy;
+	sPointi *aDirection = new sPointi[10];
+	sPointi *bDirection = new sPointi[10];
+	if (z == 0) {
+		aDirection[z].x = 158;
+		aDirection[z].y = 190;
+		bDirection[z].x = 158;
+		bDirection[z].y = 190;
+		dx = aDirection[z].x + 10;
+		for (dy = aDirection[z].y - 10; dy <= aDirection[z].y + 10; dy++) {
+			int whiteDetect = edge_img.at<uchar>(dy,dx);
+			if (whiteDetect == 255){
+				detectPoint[d][0] = dx;
+				detectPoint[d][1] = dy;
+				d++;
+			}
+		}
+		dx = aDirection[z].x - 10;
+		for (dy = aDirection[z].y - 10; dy <= aDirection[z].y + 10; dy++) {
+			int whiteDetect = edge_img.at<uchar>(dy,dx);
+			if (whiteDetect == 255){
+				detectPoint[d][0] = dx;
+				detectPoint[d][1] = dy;
+				d++;
+			}
+		}
+		dy = aDirection[z].y + 10;
+		for (dx = aDirection[z].x - 10; dx <= aDirection[z].x + 10; dx++) {
+			int whiteDetect = edge_img.at<uchar>(dy,dx);
+			if (whiteDetect == 255){
+				//detectPoint[d][0] = dx;
+				//detectPoint[d][1] = dy;
+				detectPoint.push_back()= (dx, dy);
+				d++;
+			}
+		}
+		dy = aDirection[z].y - 10;
+		for (dx = aDirection[z].x - 10; dx <= aDirection[z].x + 10; dx++) {
+			int whiteDetect = edge_img.at<uchar>(dy,dx);
+			if (whiteDetect == 255){
+				detectPoint[d][0] = dx;
+				detectPoint[d][1] = dy;
+				d++;
+			}
+		}
+		printf ("point 크기 %d \n", d);
+		z++;
+	}//else if (z != 10){
+
+	//}
+	
+
+
+	int data = edge_img.at<uchar>(189,157);//(y,x)
+
+	printf("edge값 : %d \n", data);
 
 	imshow("output",output_img);
 	*distance = 0;

@@ -2,7 +2,7 @@
 
 int main()
 {
-	const char* k = "image/7.jpg";
+	const char* k = "image/5.jpg";
 	int dist = 0;
 	int x = 0;
 	int y = 0;

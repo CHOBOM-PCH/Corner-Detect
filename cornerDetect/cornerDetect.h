@@ -7,6 +7,7 @@
 #include <vector>
 #include <math.h>
 #include <iostream>
+#include "RANSAC_LineFittingAlgorithm.h"
 
 #ifdef _DEBUG
         #pragma comment(lib,"opencv_core2413d.lib")
