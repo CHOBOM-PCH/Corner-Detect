@@ -20,12 +20,19 @@
 #endif
 
 #define PI 3.1415926
-//using namespace cv;
+using namespace cv;
 
+int cornerDetect(const char* route,
+	int* distance,
+	int* pointX,
+	int* pointY);
 
-//void Line_Detect(InputArray _src, OutputArray _dst,
-//	int* distance, double* degree);//distance of center to line
-int cornerDetect(const char* route, int* distance, int* pointX, int* pointY);
-
+float cornerLineAngle(InputArray _edgeImage,
+	InputArray _src,
+	OutputArray _dst,
+	int startPointX,
+	int startPointY, 
+	int detectSize,
+	int detectNum);
 
 #endif

@@ -32,5 +32,8 @@
     <ClCompile Include="RANSAC_LineFittingAlgorithm.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="ConerLineAngle.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

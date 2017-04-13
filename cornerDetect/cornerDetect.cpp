@@ -5,7 +5,7 @@ using namespace std;
 
 int cornerDetect(const char* route, int* distance, int* pointX, int* pointY)
 {
-	
+
 	Mat input_img = imread(route);
 	Mat gray_img;
 	Mat blur_img;
@@ -25,7 +25,7 @@ int cornerDetect(const char* route, int* distance, int* pointX, int* pointY)
 	//imshow("gray", gray_img);
 	//imshow("img", threshOutput_img);
 	imshow("img", edge_img);
-	
+
 	//vector<Vec4i>lines;
 	//HoughLinesP(edge_img, lines, 1, (PI / 180), 50, 50, 5);
 	//
@@ -46,7 +46,7 @@ int cornerDetect(const char* route, int* distance, int* pointX, int* pointY)
 	//}
 
 
-	int maxCorners = 20;
+	int maxCorners = 100;
 	double qualityLevel = 0.001;
 	double minDistance = 10;
 	int    blockSize = 5;
@@ -57,84 +57,48 @@ int cornerDetect(const char* route, int* distance, int* pointX, int* pointY)
 	goodFeaturesToTrack(threshOutput_img, cornerPoints, maxCorners, qualityLevel,
 		minDistance, noArray(), blockSize, useHarrisDetector, k);
 	cout << "cornerPoints.size() = " << cornerPoints.size() << endl;
-	
+
 	vector<Point>::const_iterator it;
 	for (it = cornerPoints.begin(); it != cornerPoints.end(); ++it)	{
 		circle(output_img, *it, 5, Scalar(0, 0, 255), 2);
 		cout << "cornerPoints(" << (*it).x << ", " << (*it).y << ") " << endl;
 	}
 	
-	
-	//for (it = cornerPoints.begin(); it != cornerPoints.end(); ++it) {
-	int z = 0;
-	int d = 0;
-	vector<Vec2i>detectPoint;
-	
-	//double dx, dy;
-	//sPoint *aDirection = new sPoint[10];
-	//sPoint *bDirection = new sPoint[10];
-	int dx, dy;
-	sPointi *aDirection = new sPointi[10];
-	sPointi *bDirection = new sPointi[10];
-	if (z == 0) {
-		aDirection[z].x = 158;
-		aDirection[z].y = 190;
-		bDirection[z].x = 158;
-		bDirection[z].y = 190;
-		dx = aDirection[z].x + 10;
-		for (dy = aDirection[z].y - 10; dy <= aDirection[z].y + 10; dy++) {
-			int whiteDetect = edge_img.at<uchar>(dy,dx);
-			if (whiteDetect == 255){
-				detectPoint[d][0] = dx;
-				detectPoint[d][1] = dy;
-				d++;
-			}
-		}
-		dx = aDirection[z].x - 10;
-		for (dy = aDirection[z].y - 10; dy <= aDirection[z].y + 10; dy++) {
-			int whiteDetect = edge_img.at<uchar>(dy,dx);
-			if (whiteDetect == 255){
-				detectPoint[d][0] = dx;
-				detectPoint[d][1] = dy;
-				d++;
-			}
-		}
-		dy = aDirection[z].y + 10;
-		for (dx = aDirection[z].x - 10; dx <= aDirection[z].x + 10; dx++) {
-			int whiteDetect = edge_img.at<uchar>(dy,dx);
-			if (whiteDetect == 255){
-				//detectPoint[d][0] = dx;
-				//detectPoint[d][1] = dy;
-				detectPoint.push_back()= (dx, dy);
-				d++;
-			}
-		}
-		dy = aDirection[z].y - 10;
-		for (dx = aDirection[z].x - 10; dx <= aDirection[z].x + 10; dx++) {
-			int whiteDetect = edge_img.at<uchar>(dy,dx);
-			if (whiteDetect == 255){
-				detectPoint[d][0] = dx;
-				detectPoint[d][1] = dy;
-				d++;
-			}
-		}
-		printf ("point 크기 %d \n", d);
-		z++;
-	}//else if (z != 10){
 
-	//}
-	
+	//////////////////////코너 찾은 후 각도 측정////////////////
+	vector<Point> confirmPoint;
+	sLine* aLine = (0,0,0,0);
+	sLine* bLine = (0,0,0,0);
+	for (int i = 0; i < cornerPoints.size(); i++){
+		float Angle = cornerLineAngle(edge_img, input_img, output_img, cornerPoints[i].x, cornerPoints[i].y, 10, 5);
+		int x = cornerPoints[i].x;
+		int y = cornerPoints[i].y;
+		if (Angle < 100 && Angle > 80){
+			confirmPoint.push_back(cornerPoints[i]);
+			cout<<"cornerAngle "<<Angle<<endl;
+		}else if (Angle == 183) {
+			cout<<"찾은게 2개이상 ("<<x<<", "<<y<<")"<<endl;
+		}else if (Angle == 182) {
+			cout<<"범위에서 벗어남 ("<<x<<", "<<y<<")"<<endl;
+		}else if (Angle == 184) {
+			cout<<"주변에선이 없음 ("<<x<<", "<<y<<")"<<endl;
+		}
+	}
+	for (int i = 0; i < confirmPoint.size(); i++){
+		cout<<" X: "<<confirmPoint[i].x<<" Y: "<<confirmPoint[i].y<<"\n"<<endl;
+		circle(output_img, Point(confirmPoint[i].x, confirmPoint[i].y),5, Scalar(0,0,255), 2);
+	}
+	////////////////////////////////////////////////////////
+	//circle(output_img, Point(166, 179),5, Scalar(0,0,255), 2);
+	//int data = edge_img.at<uchar>(75,294);//(y,x)
 
-
-	int data = edge_img.at<uchar>(189,157);//(y,x)
-
-	printf("edge값 : %d \n", data);
+	//printf("edge값 : %d \n", data);
 
 	imshow("output",output_img);
 	*distance = 0;
 	*pointX = 0;
 	*pointY = 0;
-		
-	
+
+
 	return 1;
 }

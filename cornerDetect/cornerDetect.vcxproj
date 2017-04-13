@@ -66,6 +66,7 @@
     <ClInclude Include="RANSAC_LineFittingAlgorithm.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ConerLineAngle.cpp" />
     <ClCompile Include="cornerDetect.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RANSAC_LineFittingAlgorithm.cpp" />
