@@ -2,7 +2,7 @@
 
 int main()
 {
-	const char* k = "image/6.jpg";
+	const char* k = "image/5.jpg";
 	int dist = 0;
 	int x = 0;
 	int y = 0;
@@ -19,4 +19,4 @@ int main()
 		cv::waitKey(0);
 	}
 
-}
+}	

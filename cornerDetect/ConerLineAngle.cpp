@@ -3,7 +3,7 @@
 using namespace cv;
 using namespace std;
 
-float cornerLineAngle(InputArray _edgeImage, InputArray _src, OutputArray _dst, int startPointX, int startPointY, int detectSize, int detectNum){
+float cornerLineAngle(InputArray _edgeImage, InputArray _src, OutputArray _dst, int startPointX, int startPointY, int detectSize, int detectNum, bool expressLine){
 
 	Mat edge_img = _edgeImage.getMat();
 	Mat output_img = _src.getMat();
@@ -20,7 +20,7 @@ float cornerLineAngle(InputArray _edgeImage, InputArray _src, OutputArray _dst, 
 	sPointi *aDirection = new sPointi[10];
 	sPointi *bDirection = new sPointi[10];*/
 	for (int k = 0 ; k < detectNum; k++){
-		if (z == 0) {///코너 시작 지점//수정 요망
+		if (z == 0) {///코너 시작 지점
 			aDirection[z].x = startPointX;
 			aDirection[z].y = startPointY;
 			bDirection[z].x = startPointX;
@@ -83,27 +83,50 @@ float cornerLineAngle(InputArray _edgeImage, InputArray _src, OutputArray _dst, 
 			//}
 			z++;
 			if (d > 2) {//수정요망
-			/*	float a = 0, b = 0;
+				float a = 0, b = 0, c = 0;
 				float angleD = 363, angleA = 363, angleB = 363;
-				Point a, b;
+				Point pa, pb;
+				int cnt = 0;
 				for (int i = 0; i < d; i++) {
-					angleD = atan2f((float)(detectPoint[i].y - aDirection[z - 1].y), (float)(detectPoint[i].x - aDirection[z - 1].x)) * 180 / PI;
-					if (angleA == 363){
+					angleD = atan2f((float)(detectPoint[i].y - aDirection[z - 1].y), 
+						(float)(detectPoint[i].x - aDirection[z - 1].x)) * 180 / PI;
+					if (angleA == 363) {
 						angleA = angleD;
-					}else{
+						pa.x = detectPoint[i].x;
+						pa.y = detectPoint[i].y;
+					}else {
 						a = fabs(angleA - angleD);
 						if (a > 5){
-							if (angleB ==363 | a > 30){
+							cnt++;
+							if (angleB ==363) {
 								angleB = angleD;
+								pb.x = detectPoint[i].x;
+								pb.y = detectPoint[i].y;
 							}else{
 								b = fabs(angleB - angleD);
-								
+								c = fabs(angleB - angleA);
+								if (b > 5){
+									if (b > c){
+										if(cnt > i/2){
+											angleA = angleB;
+											angleB = angleD;
+											pa.x = pb.x;
+											pa.y = pb.y;
+											pb.x = detectPoint[i].x;
+											pb.y = detectPoint[i].y;
+										}
+									}
+								}
+																
 							}
 						}
 					}
-					
-				}*/
-				return 183;
+				aDirection[z].x = pa.x;
+				aDirection[z].y = pa.y;
+				bDirection[z].x = pb.x;
+				bDirection[z].y = pb.y;
+				}
+				//return 183;
 			}else if (d == 2){
 				aDirection[z].x = detectPoint[0].x;
 				aDirection[z].y = detectPoint[0].y;
@@ -278,10 +301,10 @@ float cornerLineAngle(InputArray _edgeImage, InputArray _src, OutputArray _dst, 
 			}
 			//printf ("point 크기 %d \n", detectPoint.size());
 
-			//vector<Point>::const_iterator it2;
-			//for (it2 = detectPoint.begin(); it2 != detectPoint.end(); ++it2) {
-			//	circle(output_img, *it2, 5, Scalar(255, 0, 0), 2);
-			//}
+			/*vector<Point>::const_iterator it2;
+			for (it2 = detectPoint.begin(); it2 != detectPoint.end(); ++it2) {
+				circle(output_img, *it2, 5, Scalar(255, 0, 0), 2);
+			}*/
 
 
 			if (d > 2) {//측정점이 2개 이상
@@ -337,16 +360,18 @@ float cornerLineAngle(InputArray _edgeImage, InputArray _src, OutputArray _dst, 
 			}
 			detectPoint.clear();
 			d = 0;
-			//circle(output_img, Point(aDirection[z+1].x,aDirection[z+1].y), 5, Scalar(255, 0, 0), 2);
-			//circle(output_img, Point(bDirection[z+1].x,aDirection[z+1].y), 5, Scalar(0, 255, 0), 2);
-			//imshow("output",output_img);
-			//waitKey(0);
+
 			z++;
 
 
 		}
 	}
-
+	//for (int i = 0; i < z; i++){
+	//	circle(output_img, Point(aDirection[i].x,aDirection[i].y), 5, Scalar(255, 0, 0), 2);
+	//	circle(output_img, Point(bDirection[i].x,aDirection[i].y), 5, Scalar(0, 255, 0), 2);
+	//	imshow("output",output_img);
+	//	waitKey(0);
+	//}
 
 	double costA = ransac_line_fitting (aDirection, detectNum, aLine, 30);
 	double costB = ransac_line_fitting (bDirection, detectNum, bLine, 30);
@@ -357,11 +382,13 @@ float cornerLineAngle(InputArray _edgeImage, InputArray _src, OutputArray _dst, 
 	float aAngle = (asinf(aLine.my)) *180/PI;
 	float bAngle = (asinf(bLine.my)) *180/PI;
 	float cornerAngle = fabs(aAngle - bAngle);
-	if (cornerAngle > 80 & cornerAngle < 100){
-		line(output_img, Point(aLine.sx - 500 * aLine.mx, aLine.sy - 500 * aLine.my), 
-			Point(aLine.sx + 500 * aLine.mx, aLine.sy + 500 * aLine.my), Scalar(255, 0, 255), 2);
-		line(output_img, Point(bLine.sx - 500 * bLine.mx, bLine.sy - 500 * bLine.my),
-			Point(bLine.sx + 500 * bLine.mx, bLine.sy + 500 * bLine.my), Scalar(255, 255, 0), 2);
+	if (expressLine == TRUE){
+		if (cornerAngle > 80 & cornerAngle < 100){
+			line(output_img, Point(aLine.sx - 500 * aLine.mx, aLine.sy - 500 * aLine.my), 
+				Point(aLine.sx + 500 * aLine.mx, aLine.sy + 500 * aLine.my), Scalar(255, 0, 255), 2);
+			line(output_img, Point(bLine.sx - 500 * bLine.mx, bLine.sy - 500 * bLine.my),
+				Point(bLine.sx + 500 * bLine.mx, bLine.sy + 500 * bLine.my), Scalar(255, 255, 0), 2);
+		}
 	}
 	/*cout<<"A "<<aAngle<<endl;
 	cout<<"B "<<bAngle<<endl;*/

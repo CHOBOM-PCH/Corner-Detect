@@ -20,6 +20,8 @@
 #endif
 
 #define PI 3.1415926
+#define TRUE 1
+#define FALSE 0
 using namespace cv;
 
 int cornerDetect(const char* route,
@@ -33,6 +35,7 @@ float cornerLineAngle(InputArray _edgeImage,
 	int startPointX,
 	int startPointY, 
 	int detectSize,
-	int detectNum);
+	int detectNum,
+	bool expressLine = FALSE);
 
 #endif

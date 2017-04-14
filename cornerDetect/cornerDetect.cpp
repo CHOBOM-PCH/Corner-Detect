@@ -67,27 +67,51 @@ int cornerDetect(const char* route, int* distance, int* pointX, int* pointY)
 
 	//////////////////////코너 찾은 후 각도 측정////////////////
 	vector<Point> confirmPoint;
+	vector<float> confirmAngle;
 	sLine* aLine = (0,0,0,0);
 	sLine* bLine = (0,0,0,0);
 	for (int i = 0; i < cornerPoints.size(); i++){
-		float Angle = cornerLineAngle(edge_img, input_img, output_img, cornerPoints[i].x, cornerPoints[i].y, 10, 5);
+		float Angle = cornerLineAngle(edge_img, input_img, output_img, cornerPoints[i].x, cornerPoints[i].y, 15, 7);
 		int x = cornerPoints[i].x;
 		int y = cornerPoints[i].y;
-		if (Angle < 100 && Angle > 80){
+		if (Angle > 80 && Angle < 100){
 			confirmPoint.push_back(cornerPoints[i]);
-			cout<<"cornerAngle "<<Angle<<endl;
+			confirmAngle.push_back(Angle);
+			cout<<">><<모서리 탐색 완료("<<x<<", "<<y<<", "<<Angle<<")"<<endl;
 		}else if (Angle == 183) {
 			cout<<"찾은게 2개이상 ("<<x<<", "<<y<<")"<<endl;
 		}else if (Angle == 182) {
 			cout<<"범위에서 벗어남 ("<<x<<", "<<y<<")"<<endl;
 		}else if (Angle == 184) {
 			cout<<"주변에선이 없음 ("<<x<<", "<<y<<")"<<endl;
+		}else {
+			cout<<"각도가 맞지 않음("<<x<<", "<<y<<", "<<Angle<<")"<<endl;
 		}
 	}
 	for (int i = 0; i < confirmPoint.size(); i++){
-		cout<<" X: "<<confirmPoint[i].x<<" Y: "<<confirmPoint[i].y<<"\n"<<endl;
+		cout<<" X: "<<confirmPoint[i].x<<" Y: "<<confirmPoint[i].y<<" Angle: "<<confirmAngle[i]<<"\n"<<endl;
 		circle(output_img, Point(confirmPoint[i].x, confirmPoint[i].y),5, Scalar(0,0,255), 2);
 	}
+	if (confirmPoint.size() > 1){
+		int j = 0;
+		float d, a;
+		for (int i = 0; i < confirmPoint.size(); i++){
+			d = confirmAngle[i] - 90;
+			if (i == 0){
+				a = d;
+				j = i;
+			}else{
+				if (a > d){
+					a = d;
+					j = i;
+				}
+			}
+		}
+		cornerLineAngle(edge_img, input_img, output_img, confirmPoint[j].x, confirmPoint[j].y, 15, 7, TRUE);
+		cout<<" X: "<<confirmPoint[j].x<<" Y: "<<confirmPoint[j].y<<" Angle: "<<confirmAngle[j]<<"\n"<<endl;
+		circle(output_img, Point(confirmPoint[j].x, confirmPoint[j].y),5, Scalar(0,255,0), 2);
+	}
+			
 	////////////////////////////////////////////////////////
 	//circle(output_img, Point(166, 179),5, Scalar(0,0,255), 2);
 	//int data = edge_img.at<uchar>(75,294);//(y,x)
